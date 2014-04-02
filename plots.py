@@ -8,6 +8,7 @@ Copyright (c) 2008 UCO/Lick Observatory. All rights reserved.
 import matplotlib as M
 import pylab as PL
 import matplotlib.dates as MD
+from pytz import timezone
 from datetime import datetime, timedelta
 import ephem as E
 import numpy as N
@@ -34,7 +35,8 @@ def plot_airmass(observer, output, **kw):
     site = almanac.site_info
     airmass = obs.airmass_data
     M.rcParams['timezone'] = 'UTC'
-    local_tz = MD.timezone(site.timezone)
+    #local_tz = MD.timezone(site.timezone)
+    local_tz = timezone(site.timezone)
     
     # set major ticks to hours in local time
     majorTick = MD.HourLocator(tz=local_tz)
