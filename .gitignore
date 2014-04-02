@@ -1,0 +1,29 @@
+# ignore some commonly problematic files
+
+# python compiled files
+*.py[co]
+
+# emacs backups
+*~
+\#*\#
+
+# Sphinx
+_build
+
+# Packages/installer info
+*.egg
+*.egg-info
+dist
+build
+eggs
+parts
+bin
+var
+sdist
+develop-eggs
+.installed.cfg
+distribute-*.tar.gz
+
+# Mac OSX
+.DS_Store
+
