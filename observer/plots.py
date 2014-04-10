@@ -62,16 +62,17 @@ def plot_airmass(observer, output, **kw):
                 if kw['telescope'] == 'keck2':
                     alimit = 1/N.sin(36.8*(N.pi/180.0)) # Keck 2 limits east
                     am_data_dots = limits(am_data, tdots, alimit, direction='e')
-        lc = colors[i] + lstyle
+        color = colors[i % len(colors)]
+        lc = color + lstyle
         # ax1.plot_date(lt_data, am_data, lc, linewidth=1.0, alpha=0.3, aa=True, tz=local_tz)
         # xs, ys = M.mlab.poly_between(lt_data, 2.02, am_data)
         # ax1.fill(xs, ys, facecolor=colors[i], alpha=0.2)
         lstyle = 'o'
-        lc = colors[i] + lstyle
+        lc = color + lstyle
         ax1.plot_date(lt_data, am_data_dots, lc, aa=True, tz=local_tz)
         # plot object label
         targname = am.target.name
-        ax1.text(MD.date2num(lt_data[am_data.argmin()]), am_data.min() + 0.08, targname.upper(), color=colors[i], ha='center', va='center')
+        ax1.text(MD.date2num(lt_data[am_data.argmin()]), am_data.min() + 0.08, targname.upper(), color=color, ha='center', va='center')
     ax1.set_ylim(2.02, 0.98)
     #PL.ylim(0.98, 2.02)
     PL.xlim(lt_data[0], lt_data[-1])
@@ -101,4 +102,9 @@ def plot_airmass(observer, output, **kw):
     ax2.xaxis.set_major_formatter(majorFmt)
     ax2.set_xlabel('')
     ax2.yaxis.tick_right()
-    PL.savefig(output)
+    if output == None:
+        # throw up a figure
+        PL.show()
+    else:
+        PL.savefig(output)
+    

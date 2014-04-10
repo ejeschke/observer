@@ -209,22 +209,28 @@ class Airmass:
         moon.compute(site)
         return moon.alt
         
+    def compute_one(self, target, ut):
+        """Compute the Local Mean Sideral Time, Hour Angle, Parallactic Angle and Airmass for a target at time ut"""
+        self.almanac.site.date = ut
+        target.compute(self.almanac.site)
+        lst = self.LMST(ut, self.almanac.site.long)
+        ha = self.HA(lst, self.target.ra)
+        pang = self.parallactic(float(self.target.dec), float(ha), float(self.almanac.site.lat), float(self.target.az))
+        am = self.secz(float(self.target.alt))
+        lt = self.almanac.utc2local(self.almanac.site.date)
+        m_alt = self.moon_alt(self.almanac.site)
+        return (lst, lt, ha, pang, am, m_alt)
+
     def compute(self):
         """Compute the Local Mean Sideral Time, Hour Angle, Parallactic Angle and Airmass for a target from sunrise to sunset"""
         t_range = self._set_data_range(self.almanac.sunset(), self.almanac.sunrise(), self.time_interval)
-        for t in t_range:
-            self.almanac.site.date = t
-            self.target.compute(self.almanac.site)
-            lst = self.LMST(t, self.almanac.site.long)
+        for ut in t_range:
+            (lst, lt, ha, pang, am, m_alt) = self.compute_one(self.target,
+                                                              ut)
             self.lmst.append(lst)
-            ha = self.HA(lst, self.target.ra)
             self.hour_angle.append(ha)
-            pang = self.parallactic(float(self.target.dec), float(ha), float(self.almanac.site.lat), float(self.target.az))
             self.parallactic_angle.append(pang)
-            am = self.secz(float(self.target.alt))
             self.airmass.append(am)
-            lt = self.almanac.utc2local(self.almanac.site.date)
-            m_alt = self.moon_alt(self.almanac.site)
             self.moon_altitude.append(m_alt)
             self.local.append(lt)
             self.utc.append(self.almanac.site.date)
@@ -262,3 +268,4 @@ class Airmass:
         y, m ,d, hh, mm, ss = dtime.tuple()
         mm = mm - (mm % 5)
         return E.Date(datetime(y, m , d, hh, mm, 5, 0))
+

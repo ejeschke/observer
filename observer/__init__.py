@@ -77,3 +77,4 @@ class Observer:
             raise ValueError('No almanac data exists!')
         for targ in targets:
             self.airmass_data.append(tools.Airmass(self.almanac_data, targ))
+
