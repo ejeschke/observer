@@ -8,6 +8,7 @@ Copyright (c) 2008 UCO/Lick Observatory. All rights reserved.
 import matplotlib as M
 import pylab as PL
 import matplotlib.dates as MD
+from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from pytz import timezone
 from datetime import datetime, timedelta
 import ephem as E
@@ -29,7 +30,7 @@ def limits(am, t, limit, direction):
     return am
         
 
-def plot_airmass(observer, output, **kw):
+def do_plot_airmass(observer, figure, **kw):
     obs = observer
     almanac = obs.almanac_data
     site = almanac.site_info
@@ -43,7 +44,11 @@ def plot_airmass(observer, output, **kw):
     majorFmt = PL.DateFormatter('%Hh')
     # set minor ticks to 15 min intervals
     minorTick = MD.MinuteLocator(range(0,59,15), tz=local_tz)
-    ax1 = PL.subplot(111)
+
+    figure.clf()
+    #ax1 = PL.subplot(111)
+    ax1 = figure.add_subplot(111)
+    
     #ax = PL.subplot(211)
     #ax.plot_date(dates, y, tz=local_tz)
     colors = ['r', 'b', 'g', 'c', 'm', 'y']
@@ -75,7 +80,8 @@ def plot_airmass(observer, output, **kw):
         ax1.text(MD.date2num(lt_data[am_data.argmin()]), am_data.min() + 0.08, targname.upper(), color=color, ha='center', va='center')
     ax1.set_ylim(2.02, 0.98)
     #PL.ylim(0.98, 2.02)
-    PL.xlim(lt_data[0], lt_data[-1])
+    #PL.xlim(lt_data[0], lt_data[-1])
+    ax1.set_xlim(lt_data[0], lt_data[-1])
     ax1.xaxis.set_major_locator(majorTick)
     ax1.xaxis.set_minor_locator(minorTick)
     ax1.xaxis.set_major_formatter(majorFmt)
@@ -88,7 +94,7 @@ def plot_airmass(observer, output, **kw):
     #PL.setp(labels,'rotation', 45)
     #ax = PL.subplot(212)
     #PL.show()
-    ax2 = PL.twinx()
+    ax2 = ax1.twinx()
     moon_data = N.array(airmass[0].moon_altitude)*180/N.pi
     moon_illum = almanac.moon_phase()
     ax2.plot_date(lt_data, moon_data, '#666666', linewidth=2.0, alpha=0.5, aa=True, tz=local_tz)
@@ -102,9 +108,11 @@ def plot_airmass(observer, output, **kw):
     ax2.xaxis.set_major_formatter(majorFmt)
     ax2.set_xlabel('')
     ax2.yaxis.tick_right()
-    if output == None:
-        # throw up a figure
-        PL.show()
-    else:
-        PL.savefig(output)
+
+
+def plot_airmass(observer, output, **kw):
+    figure = M.figure.Figure()
+    canvas = FigureCanvas(figure)
+    do_plot_airmass(observer, figure, **kw)
+    figure.savefig(output)
     
