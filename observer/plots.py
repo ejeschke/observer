@@ -75,6 +75,7 @@ def do_plot_airmass(observer, figure, **kw):
         lstyle = 'o'
         lc = color + lstyle
         ax1.plot_date(lt_data, am_data_dots, lc, aa=True, tz=local_tz)
+
         # plot object label
         targname = am.target.name
         ax1.text(MD.date2num(lt_data[am_data.argmin()]), am_data.min() + 0.08, targname.upper(), color=color, ha='center', va='center')
@@ -87,6 +88,15 @@ def do_plot_airmass(observer, figure, **kw):
     ax1.xaxis.set_major_formatter(majorFmt)
     labels = ax1.get_xticklabels()
     ax1.grid(True, color='#999999')
+
+    # plot current hour
+    print (lt_data[0], lt_data[-1])
+    lo = datetime.now()
+    #lo = datetime.now(tz=local_tz)
+    hi = lo + timedelta(0, 3600.0)
+    if lt_data[0] < lo < lt_data[-1]:
+        ax1.axvspan(lo, hi, facecolor='#7FFFD4', alpha=0.25)
+
     title = 'Airmass for the night of %s' % str(almanac.localdate).split()[0]
     ax1.set_title(title)
     ax1.set_xlabel(site.tzname)
