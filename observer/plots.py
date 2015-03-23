@@ -8,7 +8,6 @@ Copyright (c) 2008 UCO/Lick Observatory. All rights reserved.
 import matplotlib as M
 import pylab as PL
 import matplotlib.dates as MD
-from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from pytz import timezone
 from datetime import datetime, timedelta
 import ephem as E
@@ -90,7 +89,6 @@ def do_plot_airmass(observer, figure, **kw):
     ax1.grid(True, color='#999999')
 
     # plot current hour
-    print (lt_data[0], lt_data[-1])
     lo = datetime.now()
     #lo = datetime.now(tz=local_tz)
     hi = lo + timedelta(0, 3600.0)
@@ -121,8 +119,10 @@ def do_plot_airmass(observer, figure, **kw):
 
 
 def plot_airmass(observer, output, **kw):
-    figure = M.figure.Figure()
-    canvas = FigureCanvas(figure)
+    figure = PL.figure(1)
     do_plot_airmass(observer, figure, **kw)
-    figure.savefig(output)
-    
+    if output is not None:
+        figure.savefig(output)
+    else:
+        PL.show()
+        
